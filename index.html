@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GharForSale — Real Estate Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo"><span>Ghar</span>ForSale</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="favorites.html" class="nav-link">Favorites</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+    </div>
+    <div class="auth-section">
+      <a href="login.html" class="btn btn-primary btn-sm">Sign In</a>
+    </div>
+  </nav>
+  <div class="navbar-spacer"></div>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="container">
+      <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search properties by title, location...">
+      </div>
+      <div class="type-chips" id="type-chips">
+        <button class="chip active" data-type="">All</button>
+        <button class="chip" data-type="flat">Flat/Apartment</button>
+        <button class="chip" data-type="house">House</button>
+        <button class="chip" data-type="villa">Villa</button>
+        <button class="chip" data-type="plot">Plot</button>
+        <button class="chip" data-type="commercial">Commercial</button>
+        <button class="chip" data-type="land">Land</button>
+        <button class="chip" data-type="farmHouse">Farm House</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Grid -->
+  <div class="property-grid-section">
+    <div class="container">
+      <div class="grid-3" id="property-grid"></div>
+      <div class="load-more-container">
+        <button class="btn btn-secondary hidden" id="load-more">Load More</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAB for sellers -->
+  <a href="add-property.html" class="fab hidden" id="fab-add" title="Add Property">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </a>
+
+  <!-- Bottom Nav (Mobile) -->
+  <div class="bottom-nav">
+    <div class="bottom-nav-items">
+      <a href="index.html" class="bottom-nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="filter.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <span>Filter</span>
+      </a>
+      <a href="add-property.html" class="bottom-nav-item add-btn hidden" id="mobile-add-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </a>
+      <a href="favorites.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span>Favorites</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initAuth, getCurrentUser, getCurrentUserData } from './js/auth.js';
+    import { fetchProperties } from './js/properties.js';
+    import { createPropertyCard, showShimmerGrid, removeShimmerGrid, showToast } from './js/ui.js';
+
+    let lastDoc = null;
+    let currentType = null;
+    let currentSearch = '';
+    let debounceTimer = null;
+
+    // Read URL query params from filter page
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterType = urlParams.get('type');
+    const filterStatus = urlParams.get('status');
+    const filterMinPrice = urlParams.get('minPrice') ? parseInt(urlParams.get('minPrice')) : null;
+    const filterMaxPrice = urlParams.get('maxPrice') ? parseInt(urlParams.get('maxPrice')) : null;
+    const filterMinArea = urlParams.get('minArea') ? parseInt(urlParams.get('minArea')) : null;
+    const filterMaxArea = urlParams.get('maxArea') ? parseInt(urlParams.get('maxArea')) : null;
+    const filterBedrooms = urlParams.get('bedrooms');
+    const filterFurnishing = urlParams.get('furnishing');
+
+    if (filterType) {
+      currentType = filterType;
+      // Activate the corresponding chip
+      document.querySelectorAll('#type-chips .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.type === filterType);
+      });
+    }
+
+    // Init auth
+    initAuth((user, userData) => {
+      if (userData && userData.role === 'seller') {
+        document.getElementById('fab-add').classList.remove('hidden');
+        document.getElementById('mobile-add-btn').classList.remove('hidden');
+      }
+    });
+
+    // Load initial properties
+    loadProperties();
+
+    async function loadProperties(append = false) {
+      if (!append) {
+        showShimmerGrid('property-grid', 6);
+        lastDoc = null;
+      }
+
+      try {
+        const result = await fetchProperties({
+          type: currentType || filterType || null,
+          status: filterStatus || null,
+          minPrice: filterMinPrice,
+          maxPrice: filterMaxPrice,
+          minArea: filterMinArea,
+          maxArea: filterMaxArea,
+          bedrooms: filterBedrooms,
+          furnishing: filterFurnishing,
+          searchTerm: currentSearch || null,
+          lastDoc: append ? lastDoc : null
+        });
+
+        if (!append) removeShimmerGrid('property-grid');
+
+        const grid = document.getElementById('property-grid');
+
+        if (!append && result.properties.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              <div class="empty-title">No properties found</div>
+              <div class="empty-subtitle">Try adjusting your search or filters</div>
+            </div>`;
+        } else {
+          result.properties.forEach(p => {
+            grid.insertAdjacentHTML('beforeend', createPropertyCard(p));
+          });
+        }
+
+        lastDoc = result.lastDoc;
+        document.getElementById('load-more').classList.toggle('hidden', !result.lastDoc);
+      } catch (err) {
+        console.error('Error loading properties:', err);
+        if (!append) removeShimmerGrid('property-grid');
+        showToast('Failed to load properties', 'error');
+      }
+    }
+
+    // Search handler with debounce
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        currentSearch = e.target.value.trim();
+        loadProperties();
+      }, 300);
+    });
+
+    // Type chip click handler
+    document.querySelectorAll('#type-chips .chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#type-chips .chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentType = chip.dataset.type || null;
+        loadProperties();
+      });
+    });
+
+    // Load more
+    document.getElementById('load-more').addEventListener('click', () => {
+      loadProperties(true);
+    });
+  </script>
+</body>
+</html>
