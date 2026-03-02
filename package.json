@@ -1,0 +1,14 @@
+{
+  "name": "gharforsale-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GharForSale — Real Estate Marketplace Website",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site — no build step'",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
