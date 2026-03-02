@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filter Properties — GharForSale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo"><span>Ghar</span>ForSale</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="favorites.html" class="nav-link">Favorites</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+    </div>
+    <div class="auth-section">
+      <a href="login.html" class="btn btn-primary btn-sm">Sign In</a>
+    </div>
+  </nav>
+  <div class="navbar-spacer"></div>
+
+  <div class="filter-page">
+    <div class="container">
+      <h1 class="page-title">Filter Properties</h1>
+
+      <!-- Price Range -->
+      <div class="filter-section">
+        <label class="filter-label">Price Range (₹)</label>
+        <div class="filter-range">
+          <div class="form-group" style="flex:1;margin-bottom:0">
+            <input type="number" id="min-price" class="form-input" placeholder="Min Price" min="0" value="">
+          </div>
+          <span class="range-separator">to</span>
+          <div class="form-group" style="flex:1;margin-bottom:0">
+            <input type="number" id="max-price" class="form-input" placeholder="Max Price" min="0" value="">
+          </div>
+        </div>
+      </div>
+
+      <!-- Area Range -->
+      <div class="filter-section">
+        <label class="filter-label">Area Range (sqft)</label>
+        <div class="filter-range">
+          <div class="form-group" style="flex:1;margin-bottom:0">
+            <input type="number" id="min-area" class="form-input" placeholder="Min Area" min="0" value="">
+          </div>
+          <span class="range-separator">to</span>
+          <div class="form-group" style="flex:1;margin-bottom:0">
+            <input type="number" id="max-area" class="form-input" placeholder="Max Area" min="0" value="">
+          </div>
+        </div>
+      </div>
+
+      <!-- Property Type -->
+      <div class="filter-section">
+        <label class="filter-label">Property Type</label>
+        <div class="filter-chips" id="type-chips">
+          <button class="chip active" data-value="">All</button>
+          <button class="chip" data-value="flat">Flat/Apartment</button>
+          <button class="chip" data-value="house">House</button>
+          <button class="chip" data-value="villa">Villa</button>
+          <button class="chip" data-value="plot">Plot</button>
+          <button class="chip" data-value="commercial">Commercial</button>
+          <button class="chip" data-value="land">Land</button>
+          <button class="chip" data-value="farmHouse">Farm House</button>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="filter-section">
+        <label class="filter-label">Listing Status</label>
+        <div class="filter-chips" id="status-chips">
+          <button class="chip active" data-value="">All</button>
+          <button class="chip" data-value="sale">For Sale</button>
+          <button class="chip" data-value="rent">For Rent</button>
+          <button class="chip" data-value="lease">For Lease</button>
+          <button class="chip" data-value="pg">PG/Hostel</button>
+        </div>
+      </div>
+
+      <!-- Bedrooms -->
+      <div class="filter-section">
+        <label class="filter-label">Bedrooms</label>
+        <div class="filter-chips" id="bedroom-chips">
+          <button class="chip active" data-value="">Any</button>
+          <button class="chip" data-value="1">1</button>
+          <button class="chip" data-value="2">2</button>
+          <button class="chip" data-value="3">3</button>
+          <button class="chip" data-value="4">4</button>
+          <button class="chip" data-value="5">5+</button>
+        </div>
+      </div>
+
+      <!-- Furnishing -->
+      <div class="filter-section">
+        <label class="filter-label">Furnishing</label>
+        <div class="filter-chips" id="furnishing-chips">
+          <button class="chip active" data-value="">Any</button>
+          <button class="chip" data-value="unfurnished">Unfurnished</button>
+          <button class="chip" data-value="semiFurnished">Semi Furnished</button>
+          <button class="chip" data-value="fullyFurnished">Fully Furnished</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Footer -->
+  <div class="filter-footer">
+    <button class="btn btn-secondary" id="clear-btn">Clear All</button>
+    <button class="btn btn-primary" id="apply-btn">Apply Filters</button>
+  </div>
+
+  <!-- Bottom Nav (Mobile) -->
+  <div class="bottom-nav" style="bottom:60px">
+    <div class="bottom-nav-items">
+      <a href="index.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="filter.html" class="bottom-nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <span>Filter</span>
+      </a>
+      <a href="add-property.html" class="bottom-nav-item add-btn hidden" id="mobile-add-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </a>
+      <a href="favorites.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span>Favorites</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initAuth } from './js/auth.js';
+
+    initAuth((user, userData) => {
+      if (userData && userData.role === 'seller') {
+        const mobileAdd = document.getElementById('mobile-add-btn');
+        if (mobileAdd) mobileAdd.classList.remove('hidden');
+      }
+    });
+
+    // Chip group handlers (single-select per group)
+    function setupChipGroup(containerId) {
+      const container = document.getElementById(containerId);
+      container.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+        });
+      });
+    }
+
+    setupChipGroup('type-chips');
+    setupChipGroup('status-chips');
+    setupChipGroup('bedroom-chips');
+    setupChipGroup('furnishing-chips');
+
+    // Get selected value from chip group
+    function getChipValue(containerId) {
+      const active = document.querySelector(`#${containerId} .chip.active`);
+      return active ? active.dataset.value : '';
+    }
+
+    // Clear all filters
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      document.getElementById('min-price').value = '';
+      document.getElementById('max-price').value = '';
+      document.getElementById('min-area').value = '';
+      document.getElementById('max-area').value = '';
+
+      ['type-chips', 'status-chips', 'bedroom-chips', 'furnishing-chips'].forEach(id => {
+        const container = document.getElementById(id);
+        container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        container.querySelector('.chip').classList.add('active'); // First chip (All/Any)
+      });
+    });
+
+    // Apply filters
+    document.getElementById('apply-btn').addEventListener('click', () => {
+      const params = new URLSearchParams();
+
+      const type = getChipValue('type-chips');
+      const status = getChipValue('status-chips');
+      const bedrooms = getChipValue('bedroom-chips');
+      const furnishing = getChipValue('furnishing-chips');
+      const minPrice = document.getElementById('min-price').value;
+      const maxPrice = document.getElementById('max-price').value;
+      const minArea = document.getElementById('min-area').value;
+      const maxArea = document.getElementById('max-area').value;
+
+      if (type) params.set('type', type);
+      if (status) params.set('status', status);
+      if (bedrooms) params.set('bedrooms', bedrooms);
+      if (furnishing) params.set('furnishing', furnishing);
+      if (minPrice) params.set('minPrice', minPrice);
+      if (maxPrice) params.set('maxPrice', maxPrice);
+      if (minArea) params.set('minArea', minArea);
+      if (maxArea) params.set('maxArea', maxArea);
+
+      const queryString = params.toString();
+      window.location.href = queryString ? `index.html?${queryString}` : 'index.html';
+    });
+
+    // Read existing params and pre-fill
+    const urlParams = new URLSearchParams(window.location.search);
+
+    function preSelectChip(containerId, value) {
+      if (!value) return;
+      const container = document.getElementById(containerId);
+      const target = container.querySelector(`.chip[data-value="${value}"]`);
+      if (target) {
+        container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        target.classList.add('active');
+      }
+    }
+
+    preSelectChip('type-chips', urlParams.get('type'));
+    preSelectChip('status-chips', urlParams.get('status'));
+    preSelectChip('bedroom-chips', urlParams.get('bedrooms'));
+    preSelectChip('furnishing-chips', urlParams.get('furnishing'));
+
+    if (urlParams.get('minPrice')) document.getElementById('min-price').value = urlParams.get('minPrice');
+    if (urlParams.get('maxPrice')) document.getElementById('max-price').value = urlParams.get('maxPrice');
+    if (urlParams.get('minArea')) document.getElementById('min-area').value = urlParams.get('minArea');
+    if (urlParams.get('maxArea')) document.getElementById('max-area').value = urlParams.get('maxArea');
+  </script>
+</body>
+</html>
