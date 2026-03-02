@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Details — GharForSale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo"><span>Ghar</span>ForSale</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="favorites.html" class="nav-link">Favorites</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+    </div>
+    <div class="auth-section">
+      <a href="login.html" class="btn btn-primary btn-sm">Sign In</a>
+    </div>
+  </nav>
+
+  <!-- Loading State -->
+  <div id="loading-state" style="padding-top:64px">
+    <div class="shimmer" style="width:100%;height:400px"></div>
+    <div class="container" style="max-width:900px;padding-top:24px">
+      <div class="shimmer shimmer-text" style="width:70%;height:24px;margin-bottom:12px"></div>
+      <div class="shimmer shimmer-text" style="width:40%;height:20px;margin-bottom:24px"></div>
+      <div class="shimmer shimmer-text" style="width:100%;height:100px"></div>
+    </div>
+  </div>
+
+  <!-- Property Detail Content (hidden until loaded) -->
+  <div id="detail-content" class="hidden">
+    <!-- Hero Image -->
+    <div class="detail-hero">
+      <img id="hero-image" src="" alt="" onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=60'">
+      <div class="hero-overlay"></div>
+      <a href="index.html" class="hero-back btn-icon" title="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <button class="hero-fav btn-icon fav-btn" id="fav-btn" title="Toggle Favorite">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="22" height="22"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+    </div>
+
+    <!-- Content Card -->
+    <div class="detail-content">
+      <div class="detail-card">
+        <!-- Title and Price -->
+        <div class="detail-title-row">
+          <h1 class="detail-title" id="prop-title"></h1>
+          <div class="detail-price" id="prop-price"></div>
+        </div>
+
+        <!-- Location -->
+        <div class="detail-location" id="prop-location">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="prop-location-text"></span>
+        </div>
+
+        <!-- Badges -->
+        <div class="detail-badges" id="prop-badges"></div>
+
+        <!-- Specs Grid -->
+        <div class="detail-specs" id="prop-specs"></div>
+
+        <!-- Description -->
+        <div id="description-section">
+          <h3 class="detail-section-title">Description</h3>
+          <p class="detail-description" id="prop-description"></p>
+        </div>
+
+        <!-- Amenities -->
+        <div id="amenities-section" class="hidden">
+          <h3 class="detail-section-title">Amenities</h3>
+          <div class="detail-amenities" id="prop-amenities"></div>
+        </div>
+
+        <!-- Owner Card -->
+        <div class="owner-card" id="owner-card">
+          <div class="owner-avatar" id="owner-avatar"></div>
+          <div class="owner-info">
+            <div class="owner-name" id="owner-name"></div>
+            <div class="owner-phone" id="owner-phone"></div>
+          </div>
+          <div class="owner-actions" id="owner-actions"></div>
+        </div>
+
+        <!-- AI Analysis Section -->
+        <div class="ai-section">
+          <h3 class="detail-section-title">AI Investment Analysis</h3>
+          <button class="btn btn-primary ai-trigger-btn" id="ai-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/></svg>
+            Get AI Analysis
+          </button>
+          <div class="ai-loading hidden" id="ai-loading">
+            <div class="spinner"></div>
+            <span>Analyzing property...</span>
+          </div>
+          <div id="ai-result" class="hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav (Mobile) -->
+  <div class="bottom-nav">
+    <div class="bottom-nav-items">
+      <a href="index.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="filter.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <span>Filter</span>
+      </a>
+      <a href="add-property.html" class="bottom-nav-item add-btn hidden" id="mobile-add-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </a>
+      <a href="favorites.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span>Favorites</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initAuth, getCurrentUser, getCurrentUserData } from './js/auth.js';
+    import { fetchPropertyById } from './js/properties.js';
+    import { isFavorite, toggleFavorite } from './js/favorites.js';
+    import {
+      formatPrice, getPropertyTypeText, getPropertyStatusText,
+      getFurnishingText, getStatusColor, timeAgo, showToast, escapeHtml
+    } from './js/ui.js';
+    import { getStockImage } from './js/stock-images.js';
+
+    const propertyId = new URLSearchParams(window.location.search).get('id');
+    let property = null;
+
+    if (!propertyId) {
+      window.location.href = 'index.html';
+    }
+
+    // Init auth
+    initAuth(async (user, userData) => {
+      if (userData && userData.role === 'seller') {
+        const mobileAdd = document.getElementById('mobile-add-btn');
+        if (mobileAdd) mobileAdd.classList.remove('hidden');
+      }
+
+      // Check favorite state
+      if (user && propertyId) {
+        try {
+          const fav = await isFavorite(user.uid, propertyId);
+          if (fav) {
+            document.getElementById('fav-btn').classList.add('active');
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+    });
+
+    // Load property
+    loadProperty();
+
+    async function loadProperty() {
+      try {
+        property = await fetchPropertyById(propertyId);
+        if (!property) {
+          showToast('Property not found', 'error');
+          window.location.href = 'index.html';
+          return;
+        }
+        renderProperty(property);
+      } catch (err) {
+        console.error('Error loading property:', err);
+        showToast('Failed to load property', 'error');
+      }
+    }
+
+    function renderProperty(p) {
+      document.title = `${p.title} — GharForSale`;
+
+      // Hero image
+      const image = (p.images && p.images.length > 0) ? p.images[0] : getStockImage(p.type);
+      document.getElementById('hero-image').src = image;
+      document.getElementById('hero-image').alt = p.title;
+
+      // Title & Price
+      document.getElementById('prop-title').textContent = p.title || 'Untitled Property';
+      document.getElementById('prop-price').textContent = formatPrice(p.price, p.status);
+
+      // Location
+      document.getElementById('prop-location-text').textContent = p.location || p.address || 'Location not specified';
+
+      // Badges
+      const badgesHtml = `
+        <span class="detail-badge" style="background:${getStatusColor(p.status)};color:white">${escapeHtml(getPropertyStatusText(p.status))}</span>
+        <span class="detail-badge" style="background:var(--bg-elevated);color:var(--text-secondary)">${escapeHtml(getPropertyTypeText(p.type))}</span>
+        ${p.furnishing ? `<span class="detail-badge" style="background:var(--bg-elevated);color:var(--text-secondary)">${escapeHtml(getFurnishingText(p.furnishing))}</span>` : ''}
+      `;
+      document.getElementById('prop-badges').innerHTML = badgesHtml;
+
+      // Specs
+      const specs = [];
+      if (p.bedrooms != null) specs.push({ icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"/><path d="M21 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2"/><path d="M3 11h18"/></svg>', value: p.bedrooms, label: 'Bedrooms' });
+      if (p.bathrooms != null) specs.push({ icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3v2.25"/></svg>', value: p.bathrooms, label: 'Bathrooms' });
+      if (p.area) specs.push({ icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>', value: p.area + ' sqft', label: 'Area' });
+      if (p.furnishing) specs.push({ icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0H6a2 2 0 0 0-4 0z"/><path d="M4 18v2"/><path d="M20 18v2"/></svg>', value: getFurnishingText(p.furnishing), label: 'Furnishing' });
+
+      document.getElementById('prop-specs').innerHTML = specs.map(s => `
+        <div class="detail-spec">
+          ${s.icon}
+          <div class="spec-value">${escapeHtml(String(s.value))}</div>
+          <div class="spec-label">${escapeHtml(s.label)}</div>
+        </div>
+      `).join('');
+
+      // Description
+      document.getElementById('prop-description').textContent = p.description || 'No description provided.';
+
+      // Amenities
+      if (p.amenities && p.amenities.length > 0) {
+        document.getElementById('amenities-section').classList.remove('hidden');
+        document.getElementById('prop-amenities').innerHTML = p.amenities.map(a => `
+          <span class="amenity-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+            ${escapeHtml(a)}
+          </span>
+        `).join('');
+      }
+
+      // Owner card
+      const ownerInitial = (p.ownerName || 'O').charAt(0).toUpperCase();
+      document.getElementById('owner-avatar').textContent = ownerInitial;
+      document.getElementById('owner-name').textContent = p.ownerName || 'Property Owner';
+      document.getElementById('owner-phone').textContent = p.ownerPhone || 'Phone not available';
+
+      const actionsHtml = [];
+      if (p.ownerPhone) {
+        actionsHtml.push(`<a href="tel:${escapeHtml(p.ownerPhone)}" class="btn btn-primary btn-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call</a>`);
+        actionsHtml.push(`<a href="sms:${escapeHtml(p.ownerPhone)}?body=${encodeURIComponent('Hi, I am interested in your property: ' + p.title)}" class="btn btn-secondary btn-sm">SMS</a>`);
+      }
+      document.getElementById('owner-actions').innerHTML = actionsHtml.join('');
+
+      // Show content, hide loading
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('detail-content').classList.remove('hidden');
+    }
+
+    // Favorite toggle
+    document.getElementById('fav-btn').addEventListener('click', async () => {
+      const user = getCurrentUser();
+      if (!user) {
+        showToast('Please sign in to save favorites', 'info');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const newState = await toggleFavorite(user.uid, propertyId);
+        const favBtn = document.getElementById('fav-btn');
+        favBtn.classList.toggle('active', newState);
+        showToast(newState ? 'Added to favorites' : 'Removed from favorites', 'success');
+      } catch (err) {
+        showToast('Failed to update favorite', 'error');
+      }
+    });
+
+    // AI Analysis
+    document.getElementById('ai-btn').addEventListener('click', async () => {
+      if (!property) return;
+
+      const aiBtn = document.getElementById('ai-btn');
+      const aiLoading = document.getElementById('ai-loading');
+      const aiResult = document.getElementById('ai-result');
+
+      aiBtn.classList.add('hidden');
+      aiLoading.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/api/ai-analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: property.location,
+            area: property.area,
+            landRate: property.landRate,
+            type: property.type,
+            price: property.price,
+            bedrooms: property.bedrooms,
+            bathrooms: property.bathrooms
+          })
+        });
+
+        const analysis = await response.json();
+        renderAIAnalysis(analysis);
+      } catch (err) {
+        console.error('AI analysis error:', err);
+        showToast('AI analysis failed, showing estimated data', 'info');
+        renderAIAnalysis({
+          scores: { location: 7.0, roi: 6.5, growth: 7.0 },
+          market_insights: { demand_level: "Moderate demand", supply_status: "Balanced supply", price_trend: "Stable with slight appreciation" },
+          investment_metrics: { expected_roi: "8-10% expected", rental_yield: "3-4% potential yield", price_appreciation: "10-15% in 3 years" }
+        });
+      } finally {
+        aiLoading.classList.add('hidden');
+      }
+    });
+
+    function renderAIAnalysis(analysis) {
+      const aiResult = document.getElementById('ai-result');
+      const s = analysis.scores || {};
+      const mi = analysis.market_insights || {};
+      const im = analysis.investment_metrics || {};
+
+      aiResult.innerHTML = `
+        <div class="ai-card">
+          <h4 style="margin-bottom:16px;font-weight:600">Investment Scores</h4>
+          <div class="ai-scores">
+            <div class="score-circle">
+              <div class="score-number">${(s.location || 0).toFixed(1)}</div>
+              <div class="score-label">Location</div>
+            </div>
+            <div class="score-circle">
+              <div class="score-number">${(s.roi || 0).toFixed(1)}</div>
+              <div class="score-label">ROI</div>
+            </div>
+            <div class="score-circle">
+              <div class="score-number">${(s.growth || 0).toFixed(1)}</div>
+              <div class="score-label">Growth</div>
+            </div>
+          </div>
+
+          <h4 style="margin-bottom:12px;font-weight:600">Market Insights</h4>
+          <div class="ai-insights">
+            <div class="ai-metric">
+              <div class="ai-metric-label">Demand Level</div>
+              <div class="ai-metric-value">${escapeHtml(mi.demand_level || 'N/A')}</div>
+            </div>
+            <div class="ai-metric">
+              <div class="ai-metric-label">Supply Status</div>
+              <div class="ai-metric-value">${escapeHtml(mi.supply_status || 'N/A')}</div>
+            </div>
+            <div class="ai-metric">
+              <div class="ai-metric-label">Price Trend</div>
+              <div class="ai-metric-value">${escapeHtml(mi.price_trend || 'N/A')}</div>
+            </div>
+          </div>
+
+          <h4 style="margin:16px 0 12px;font-weight:600">Investment Metrics</h4>
+          <div class="ai-metrics-row">
+            <div class="ai-metric">
+              <div class="ai-metric-label">Expected ROI</div>
+              <div class="ai-metric-value">${escapeHtml(im.expected_roi || 'N/A')}</div>
+            </div>
+            <div class="ai-metric">
+              <div class="ai-metric-label">Rental Yield</div>
+              <div class="ai-metric-value">${escapeHtml(im.rental_yield || 'N/A')}</div>
+            </div>
+            <div class="ai-metric">
+              <div class="ai-metric-label">Price Appreciation</div>
+              <div class="ai-metric-value">${escapeHtml(im.price_appreciation || 'N/A')}</div>
+            </div>
+          </div>
+        </div>`;
+
+      aiResult.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
