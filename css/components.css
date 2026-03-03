@@ -7,7 +7,7 @@
   left: 0;
   width: 100%;
   z-index: 1000;
-  background: rgba(26, 26, 46, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   height: 64px;
@@ -53,7 +53,7 @@
 
 .navbar .nav-link.active {
   color: var(--accent);
-  background: rgba(74, 144, 226, 0.1);
+  background: rgba(37, 99, 235, 0.08);
 }
 
 .navbar .auth-section {
@@ -150,7 +150,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  background: rgba(26, 26, 46, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 1000;
@@ -220,6 +220,7 @@
   background: var(--bg-secondary);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  border: 1px solid var(--border);
   box-shadow: var(--shadow);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
@@ -229,7 +230,7 @@
 
 .property-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .property-card .card-image {
@@ -271,8 +272,9 @@
 .property-card .type-badge {
   top: 12px;
   left: 12px;
-  background: var(--bg-elevated);
+  background: rgba(255, 255, 255, 0.9);
   color: var(--text-primary);
+  backdrop-filter: blur(4px);
 }
 
 .property-card .card-content {
@@ -476,7 +478,7 @@
 }
 
 .form-select option {
-  background: var(--bg-elevated);
+  background: var(--bg-secondary);
   color: var(--text-primary);
 }
 
@@ -503,7 +505,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 2000;
@@ -584,7 +586,7 @@
    Shimmer Skeleton
    ============================== */
 .shimmer {
-  background: linear-gradient(90deg, var(--bg-secondary) 25%, rgba(255,255,255,0.08) 50%, var(--bg-secondary) 75%);
+  background: linear-gradient(90deg, #e2e8f0 25%, #f0f2f5 50%, #e2e8f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -626,7 +628,7 @@
 }
 
 .chip:hover {
-  background: rgba(74, 144, 226, 0.15);
+  background: rgba(37, 99, 235, 0.08);
   color: var(--text-primary);
 }
 
@@ -640,7 +642,7 @@
    ============================== */
 .ai-card {
   background: var(--bg-secondary);
-  border: 1px solid rgba(74, 144, 226, 0.3);
+  border: 1px solid rgba(37, 99, 235, 0.2);
   border-radius: var(--radius-lg);
   padding: 24px;
   margin-top: 16px;
@@ -758,8 +760,8 @@
   border-radius: 50%;
   background: var(--accent);
   cursor: pointer;
-  border: 2px solid var(--bg-primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .range-slider input[type="range"]::-moz-range-thumb {
@@ -768,8 +770,8 @@
   border-radius: 50%;
   background: var(--accent);
   cursor: pointer;
-  border: 2px solid var(--bg-primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .range-slider .range-values {
@@ -814,7 +816,7 @@
 }
 
 .amenity-checkbox:hover {
-  background: rgba(74, 144, 226, 0.15);
+  background: rgba(37, 99, 235, 0.06);
 }
 
 .amenity-checkbox input[type="checkbox"] {
@@ -824,7 +826,7 @@
 }
 
 .amenity-checkbox.selected {
-  background: rgba(74, 144, 226, 0.2);
+  background: rgba(37, 99, 235, 0.08);
   color: var(--accent);
 }
 
@@ -898,7 +900,7 @@
 .loading-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(26, 26, 46, 0.8);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 4000;

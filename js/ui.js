@@ -120,14 +120,14 @@ const FURNISHING_TEXT = {
 };
 
 const STATUS_COLORS = {
-  sale: '#4A90E2',
-  rent: '#38b2ac',
-  lease: '#f6ad55',
-  pg: '#9F7AEA',
-  sold: '#fc5c65',
-  rented: '#fc5c65',
-  pending: '#f6ad55',
-  inactive: '#718096'
+  sale: '#2563EB',
+  rent: '#059669',
+  lease: '#d97706',
+  pg: '#7c3aed',
+  sold: '#dc2626',
+  rented: '#dc2626',
+  pending: '#d97706',
+  inactive: '#6b7280'
 };
 
 export function getPropertyTypeText(type) {
