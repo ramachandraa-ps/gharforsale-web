@@ -194,7 +194,7 @@ export function escapeHtml(str) {
 export function createPropertyCard(property) {
   const image = (property.images && property.images.length > 0)
     ? property.images[0]
-    : getStockImage(property.type);
+    : getStockImage(property.type, property.id);
 
   const statusColor = getStatusColor(property.status);
   const statusText = getPropertyStatusText(property.status);

@@ -35,9 +35,17 @@ export const STOCK_IMAGES = {
 
 export const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=60";
 
-export function getStockImage(type) {
+export function getStockImage(type, seed) {
   const images = STOCK_IMAGES[type];
   if (!images || images.length === 0) return DEFAULT_IMAGE;
+  if (seed) {
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+      hash |= 0;
+    }
+    return images[Math.abs(hash) % images.length];
+  }
   return images[Math.floor(Math.random() * images.length)];
 }
 
