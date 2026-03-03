@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Property — GharForSale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%234A90E2'/><text x='50' y='68' font-size='50' font-weight='bold' text-anchor='middle' fill='white'>G</text></svg>">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <div class="toast-container" id="toast-container"></div>
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo"><span>Ghar</span>ForSale</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="favorites.html" class="nav-link">Favorites</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+    </div>
+    <div class="auth-section">
+      <div class="shimmer" style="width:80px;height:32px;border-radius:var(--radius-sm)"></div>
+    </div>
+  </nav>
+  <div class="navbar-spacer"></div>
+
+  <div class="add-property-page">
+    <div class="container">
+      <div class="form-container">
+        <h1>Edit Property</h1>
+        <p class="form-subtitle">Update your property listing details</p>
+
+        <form id="property-form">
+          <h3 class="form-section-title">Basic Details</h3>
+          <div class="form-group">
+            <label class="form-label" for="title">Title *</label>
+            <input type="text" id="title" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="description">Description *</label>
+            <textarea id="description" class="form-textarea" required></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="price">Price (₹) *</label>
+              <input type="number" id="price" class="form-input" min="0" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="area">Area (sqft) *</label>
+              <input type="number" id="area" class="form-input" min="0" required>
+            </div>
+          </div>
+
+          <h3 class="form-section-title">Location</h3>
+          <div class="form-group">
+            <label class="form-label" for="location">Location *</label>
+            <input type="text" id="location" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="address">Full Address</label>
+            <input type="text" id="address" class="form-input">
+          </div>
+
+          <h3 class="form-section-title">Property Information</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="type">Property Type *</label>
+              <select id="type" class="form-select" required>
+                <option value="flat">Flat/Apartment</option>
+                <option value="house">House</option>
+                <option value="villa">Villa</option>
+                <option value="plot">Plot</option>
+                <option value="commercial">Commercial</option>
+                <option value="land">Land</option>
+                <option value="farmHouse">Farm House</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="status">Listing Type *</label>
+              <select id="status" class="form-select" required>
+                <option value="sale">For Sale</option>
+                <option value="rent">For Rent</option>
+                <option value="lease">For Lease</option>
+                <option value="pg">PG/Hostel</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="bedrooms">Bedrooms</label>
+              <input type="number" id="bedrooms" class="form-input" min="0" max="10" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="bathrooms">Bathrooms</label>
+              <input type="number" id="bathrooms" class="form-input" min="0" max="10" value="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="furnishing">Furnishing</label>
+            <select id="furnishing" class="form-select">
+              <option value="unfurnished">Unfurnished</option>
+              <option value="semiFurnished">Semi Furnished</option>
+              <option value="fullyFurnished">Fully Furnished</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="landArea">Land Area (sqft)</label>
+              <input type="number" id="landArea" class="form-input" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="landRate">Land Rate (₹/sqft)</label>
+              <input type="number" id="landRate" class="form-input" min="0">
+            </div>
+          </div>
+
+          <h3 class="form-section-title">Amenities</h3>
+          <div class="amenities-grid" id="amenities-grid"></div>
+
+          <div class="form-submit">
+            <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireRole, getCurrentUser, getCurrentUserData } from './js/auth.js';
+    import { fetchPropertyById, updateProperty } from './js/properties.js';
+    import { showToast, showLoader, hideLoader } from './js/ui.js';
+
+    const propertyId = new URLSearchParams(window.location.search).get('id');
+    if (!propertyId) {
+      window.location.href = 'profile.html';
+      throw new Error('No property ID');
+    }
+
+    const AMENITIES = [
+      'Parking', 'Lift', 'Security', 'Gym', 'Swimming Pool', 'Garden',
+      'Power Backup', 'Water Supply', 'Clubhouse', 'Fire Safety',
+      'Intercom', 'Gas Pipeline', 'Visitor Parking', 'Maintenance Staff',
+      'CCTV', 'Rain Water Harvesting'
+    ];
+
+    const amenitiesGrid = document.getElementById('amenities-grid');
+    AMENITIES.forEach(amenity => {
+      const label = document.createElement('label');
+      label.className = 'amenity-checkbox';
+      label.innerHTML = `<input type="checkbox" value="${amenity}"><span>${amenity}</span>`;
+      label.addEventListener('click', () => {
+        setTimeout(() => {
+          label.classList.toggle('selected', label.querySelector('input').checked);
+        }, 0);
+      });
+      amenitiesGrid.appendChild(label);
+    });
+
+    requireRole('seller', async (user, userData) => {
+      try {
+        const property = await fetchPropertyById(propertyId);
+        if (!property) {
+          showToast('Property not found', 'error');
+          window.location.href = 'profile.html';
+          return;
+        }
+        if (property.ownerId !== user.uid && property.ownerId !== 'seed-data') {
+          showToast('You can only edit your own properties', 'error');
+          window.location.href = 'profile.html';
+          return;
+        }
+        prefillForm(property);
+      } catch (err) {
+        showToast('Failed to load property', 'error');
+        console.error(err);
+      }
+    });
+
+    function prefillForm(p) {
+      document.getElementById('title').value = p.title || '';
+      document.getElementById('description').value = p.description || '';
+      document.getElementById('price').value = p.price || '';
+      document.getElementById('area').value = p.area || '';
+      document.getElementById('location').value = p.location || '';
+      document.getElementById('address').value = p.address || '';
+      document.getElementById('type').value = p.type || 'house';
+      document.getElementById('status').value = p.status || 'sale';
+      document.getElementById('bedrooms').value = p.bedrooms || 0;
+      document.getElementById('bathrooms').value = p.bathrooms || 0;
+      document.getElementById('furnishing').value = p.furnishing || 'unfurnished';
+      document.getElementById('landArea').value = p.landArea || '';
+      document.getElementById('landRate').value = p.landRate || '';
+
+      if (p.amenities && p.amenities.length > 0) {
+        document.querySelectorAll('#amenities-grid input[type="checkbox"]').forEach(cb => {
+          if (p.amenities.includes(cb.value)) {
+            cb.checked = true;
+            cb.closest('.amenity-checkbox').classList.add('selected');
+          }
+        });
+      }
+    }
+
+    document.getElementById('property-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const updates = {
+        title: document.getElementById('title').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        price: parseFloat(document.getElementById('price').value) || 0,
+        area: parseFloat(document.getElementById('area').value) || 0,
+        location: document.getElementById('location').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        type: document.getElementById('type').value,
+        status: document.getElementById('status').value,
+        bedrooms: parseInt(document.getElementById('bedrooms').value) || 0,
+        bathrooms: parseInt(document.getElementById('bathrooms').value) || 0,
+        furnishing: document.getElementById('furnishing').value,
+        landArea: parseFloat(document.getElementById('landArea').value) || 0,
+        landRate: parseFloat(document.getElementById('landRate').value) || 0,
+        amenities: Array.from(document.querySelectorAll('#amenities-grid input[type="checkbox"]:checked')).map(cb => cb.value)
+      };
+
+      if (!updates.title || !updates.description || !updates.price || !updates.area || !updates.location) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+
+      showLoader();
+      try {
+        await updateProperty(propertyId, updates);
+        showToast('Property updated!', 'success');
+        setTimeout(() => window.location.href = 'profile.html', 1000);
+      } catch (err) {
+        showToast('Failed: ' + err.message, 'error');
+        console.error(err);
+      } finally {
+        hideLoader();
+      }
+    });
+  </script>
+</body>
+</html>
