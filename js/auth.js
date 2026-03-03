@@ -1,6 +1,10 @@
 import { auth, db, googleProvider } from './firebase-config.js';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import {
+  onAuthStateChanged, signInWithRedirect, getRedirectResult, signOut
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import {
+  doc, getDoc, setDoc, serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { showToast, escapeHtml } from './ui.js';
 
 let currentUser = null;
@@ -16,6 +20,33 @@ export function getCurrentUserData() {
   return currentUserData;
 }
 
+/**
+ * Ensures a Firestore user document exists for the given Firebase Auth user.
+ * Creates one if missing (first-time sign-in).
+ */
+async function ensureUserDoc(user) {
+  const userDocRef = doc(db, 'users', user.uid);
+  const userDoc = await getDoc(userDocRef);
+
+  if (!userDoc.exists()) {
+    const newData = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || '',
+      photoURL: user.photoURL || '',
+      role: null,
+      phoneNumber: user.phoneNumber || '',
+      address: '',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    await setDoc(userDocRef, newData);
+    return { ...newData, role: null };
+  }
+
+  return userDoc.data();
+}
+
 export function initAuth(onReady) {
   // Singleton guard - only register onAuthStateChanged once
   if (!authInitialized) {
@@ -24,8 +55,7 @@ export function initAuth(onReady) {
       currentUser = user;
       if (user) {
         try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          currentUserData = userDoc.exists() ? userDoc.data() : null;
+          currentUserData = await ensureUserDoc(user);
         } catch (err) {
           console.error('Error fetching user data:', err);
           currentUserData = null;
@@ -44,40 +74,35 @@ export function initAuth(onReady) {
   }
 }
 
-export async function signInWithGoogle() {
-  const result = await signInWithPopup(auth, googleProvider);
-  const user = result.user;
+/**
+ * Initiates Google sign-in via full-page redirect (no popup, no COOP issues).
+ * After sign-in, the browser redirects back to the current page.
+ * Use handleRedirectResult() on page load to get the result.
+ */
+export function signInWithGoogle() {
+  return signInWithRedirect(auth, googleProvider);
+}
 
-  // Create Firestore user doc if first-time sign-in
-  const userDocRef = doc(db, 'users', user.uid);
-  const userDoc = await getDoc(userDocRef);
-
-  if (!userDoc.exists()) {
-    await setDoc(userDocRef, {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || '',
-      photoURL: user.photoURL || '',
-      role: null,
-      phoneNumber: user.phoneNumber || '',
-      address: '',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
-    currentUserData = {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || '',
-      photoURL: user.photoURL || '',
-      role: null,
-      phoneNumber: user.phoneNumber || '',
-      address: ''
-    };
-  } else {
-    currentUserData = userDoc.data();
+/**
+ * Call on page load to check if we're returning from a redirect sign-in.
+ * Returns {user, userData} if returning from redirect, null otherwise.
+ */
+export async function handleRedirectResult() {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result && result.user) {
+      const userData = await ensureUserDoc(result.user);
+      currentUser = result.user;
+      currentUserData = userData;
+      return { user: result.user, userData };
+    }
+  } catch (err) {
+    if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+      console.error('Redirect result error:', err);
+      throw err;
+    }
   }
-
-  return { user, userData: currentUserData };
+  return null;
 }
 
 export async function handleSignOut() {
@@ -110,8 +135,6 @@ export function requireAuth(callback) {
     if (called) return;
     // Skip the initial null emission - wait for auth to resolve
     if (user === null && !auth.currentUser) {
-      // Check if auth is still loading
-      // After first real emission, if user is null, redirect
       setTimeout(() => {
         if (!currentUser) {
           called = true;

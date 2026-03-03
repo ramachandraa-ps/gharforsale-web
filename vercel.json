@@ -1,22 +1,14 @@
 {
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/__/auth/:path*", "destination": "https://gharforsale-3ea48.firebaseapp.com/__/auth/:path*" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [
     {
-      "source": "/__/auth/:path*",
-      "headers": [
-        { "key": "Cross-Origin-Opener-Policy", "value": "unsafe-none" }
-      ]
-    },
-    {
-      "source": "/((?!__/auth).*)",
+      "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" }
+        { "key": "X-Frame-Options", "value": "DENY" }
       ]
     }
   ]
