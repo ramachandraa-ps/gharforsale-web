@@ -34,15 +34,14 @@ export async function getFavorites(userId) {
     propertyIds.push(docSnap.id);
   });
 
-  const properties = [];
-  for (const id of propertyIds) {
-    const property = await fetchPropertyById(id);
-    if (property) {
-      properties.push(property);
-    }
-  }
+  if (propertyIds.length === 0) return [];
 
-  return properties;
+  // Fetch all properties in parallel instead of sequentially
+  const results = await Promise.all(
+    propertyIds.map(id => fetchPropertyById(id).catch(() => null))
+  );
+
+  return results.filter(Boolean);
 }
 
 export async function toggleFavorite(userId, propertyId) {

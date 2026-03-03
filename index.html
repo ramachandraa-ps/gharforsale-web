@@ -173,7 +173,8 @@
         }
 
         lastDoc = result.lastDoc;
-        document.getElementById('load-more').classList.toggle('hidden', !result.lastDoc);
+        const hasMore = result.lastDoc && result.properties.length > 0;
+        document.getElementById('load-more').classList.toggle('hidden', !hasMore);
       } catch (err) {
         console.error('Error loading properties:', err);
         if (!append) removeShimmerGrid('property-grid');

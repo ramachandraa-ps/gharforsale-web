@@ -147,7 +147,7 @@
       const initial = displayName.charAt(0).toUpperCase();
 
       if (photoURL) {
-        avatarEl.outerHTML = `<img src="${photoURL}" alt="" class="profile-avatar" referrerpolicy="no-referrer">`;
+        avatarEl.outerHTML = `<img src="${escapeHtml(photoURL)}" alt="" class="profile-avatar" referrerpolicy="no-referrer">`;
       } else {
         avatarEl.textContent = initial;
       }
