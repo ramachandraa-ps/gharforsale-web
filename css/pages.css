@@ -708,14 +708,19 @@
 
 @media (max-width: 768px) {
   .filter-page {
-    padding-bottom: 140px;
+    padding-bottom: 180px;
   }
 
   .filter-range {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
-  .filter-range .range-separator {
-    display: none;
+  .filter-range .form-group {
+    min-width: 0;
+  }
+
+  .filter-footer {
+    bottom: 60px;
   }
 }

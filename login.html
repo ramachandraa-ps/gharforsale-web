@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%234A90E2'/><text x='50' y='68' font-size='50' font-weight='bold' text-anchor='middle' fill='white'>G</text></svg>">
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/pages.css">
@@ -78,14 +79,18 @@
       }
     });
 
-    // Google Sign-In button — redirects away, comes back after auth
+    // Google Sign-In button — opens popup
     signinBtn.addEventListener('click', async () => {
       signinBtn.disabled = true;
-      signinBtn.textContent = 'Redirecting...';
+      signinBtn.textContent = 'Signing in...';
       try {
         await signInWithGoogle();
+        // onAuthStateChanged in initAuth will handle the redirect
       } catch (err) {
-        showToast('Sign in failed: ' + err.message, 'error');
+        // Don't show error for popup-closed-by-user
+        if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+          showToast('Sign in failed: ' + err.message, 'error');
+        }
         signinBtn.disabled = false;
         signinBtn.innerHTML = `
           <svg width="20" height="20" viewBox="0 0 48 48">
