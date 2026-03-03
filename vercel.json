@@ -1,7 +1,9 @@
 {
   "outputDirectory": ".",
+  "redirects": [
+    { "source": "/", "destination": "/landing.html", "permanent": false }
+  ],
   "rewrites": [
-    { "source": "/", "destination": "/landing.html" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [
