@@ -708,7 +708,7 @@
 
 @media (max-width: 768px) {
   .filter-page {
-    padding-bottom: 180px;
+    padding-bottom: 160px;
   }
 
   .filter-range {
@@ -718,9 +718,5 @@
 
   .filter-range .form-group {
     min-width: 0;
-  }
-
-  .filter-footer {
-    bottom: 60px;
   }
 }
