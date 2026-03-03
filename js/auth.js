@@ -5,6 +5,8 @@ import { showToast } from './ui.js';
 
 let currentUser = null;
 let currentUserData = null;
+let authReadyResolve = null;
+const authReady = new Promise(resolve => { authReadyResolve = resolve; });
 
 export function getCurrentUser() {
   return currentUser;
@@ -12,6 +14,10 @@ export function getCurrentUser() {
 
 export function getCurrentUserData() {
   return currentUserData;
+}
+
+export function waitForAuth() {
+  return authReady;
 }
 
 export function initAuth(onReady) {
@@ -29,6 +35,7 @@ export function initAuth(onReady) {
       currentUserData = null;
     }
     updateNavbar(currentUser, currentUserData);
+    authReadyResolve({ user: currentUser, userData: currentUserData });
     if (onReady) onReady(currentUser, currentUserData);
   });
 }
@@ -53,9 +60,21 @@ export async function signInWithGoogle() {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
+    // Update local cache so the caller gets fresh data
+    currentUserData = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || '',
+      photoURL: user.photoURL || '',
+      role: null,
+      phoneNumber: user.phoneNumber || '',
+      address: ''
+    };
+  } else {
+    currentUserData = userDoc.data();
   }
 
-  return result;
+  return { user, userData: currentUserData };
 }
 
 export async function handleSignOut() {

@@ -4,7 +4,7 @@ import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.0/firebas
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrDIn3z1GdmceP0pbea2stnQjohrT2Ox8",
-  authDomain: "gharforsale-3ea48.firebaseapp.com",
+  authDomain: "gharforsale-web.vercel.app",
   projectId: "gharforsale-3ea48",
   storageBucket: "gharforsale-3ea48.firebasestorage.app",
   messagingSenderId: "293372317683",

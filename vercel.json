@@ -1,6 +1,7 @@
 {
   "outputDirectory": ".",
   "rewrites": [
+    { "source": "/__/auth/:path*", "destination": "https://gharforsale-3ea48.firebaseapp.com/__/auth/:path*" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [
