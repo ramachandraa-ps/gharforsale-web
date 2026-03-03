@@ -1,5 +1,5 @@
 import { auth, db, googleProvider } from './firebase-config.js';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { onAuthStateChanged, signInWithRedirect, getRedirectResult, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { showToast } from './ui.js';
 
@@ -15,6 +15,31 @@ export function getCurrentUserData() {
 }
 
 export function initAuth(onReady) {
+  // Handle redirect result first (for signInWithRedirect flow)
+  getRedirectResult(auth).then(async (result) => {
+    if (result && result.user) {
+      const user = result.user;
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || '',
+          photoURL: user.photoURL || '',
+          role: null,
+          phoneNumber: user.phoneNumber || '',
+          address: '',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      }
+    }
+  }).catch((err) => {
+    console.error('Redirect result error:', err);
+  });
+
   onAuthStateChanged(auth, async (user) => {
     currentUser = user;
     if (user) {
@@ -34,39 +59,8 @@ export function initAuth(onReady) {
 }
 
 export async function signInWithGoogle() {
-  const result = await signInWithPopup(auth, googleProvider);
-  const user = result.user;
-
-  const userDocRef = doc(db, 'users', user.uid);
-  const userDoc = await getDoc(userDocRef);
-
-  if (!userDoc.exists()) {
-    await setDoc(userDocRef, {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || '',
-      photoURL: user.photoURL || '',
-      role: null,
-      phoneNumber: user.phoneNumber || '',
-      address: '',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
-    currentUserData = {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || '',
-      photoURL: user.photoURL || '',
-      role: null,
-      phoneNumber: '',
-      address: ''
-    };
-  } else {
-    currentUserData = userDoc.data();
-  }
-
-  currentUser = user;
-  return { user, userData: currentUserData };
+  // Use redirect instead of popup to avoid COOP issues on Vercel
+  await signInWithRedirect(auth, googleProvider);
 }
 
 export async function handleSignOut() {

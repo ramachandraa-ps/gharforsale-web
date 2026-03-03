@@ -68,30 +68,24 @@
     const roleModal = document.getElementById('role-modal');
     const signinBtn = document.getElementById('google-signin-btn');
 
-    // If already logged in with role, redirect to home
+    // If already logged in, handle redirect result and check role
     initAuth((user, userData) => {
       if (user && userData && userData.role) {
         window.location.href = 'index.html';
+      } else if (user && (!userData || !userData.role)) {
+        // User signed in but has no role — show role selection
+        roleModal.classList.remove('hidden');
       }
     });
 
-    // Google Sign-In button
+    // Google Sign-In button — redirects away, comes back after auth
     signinBtn.addEventListener('click', async () => {
       signinBtn.disabled = true;
-      signinBtn.textContent = 'Signing in...';
+      signinBtn.textContent = 'Redirecting...';
       try {
-        const { user, userData } = await signInWithGoogle();
-        if (userData && userData.role) {
-          window.location.href = 'index.html';
-        } else {
-          // Show role selection modal
-          roleModal.classList.remove('hidden');
-        }
+        await signInWithGoogle();
       } catch (err) {
-        if (err.code !== 'auth/popup-closed-by-user') {
-          showToast('Sign in failed: ' + err.message, 'error');
-        }
-      } finally {
+        showToast('Sign in failed: ' + err.message, 'error');
         signinBtn.disabled = false;
         signinBtn.innerHTML = `
           <svg width="20" height="20" viewBox="0 0 48 48">
