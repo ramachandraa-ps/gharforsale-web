@@ -11,14 +11,36 @@
   <div style="max-width:600px;margin:80px auto;padding:24px;text-align:center">
     <h1>Seed Mock Properties</h1>
     <p class="text-secondary mt-2">This will add 15 Tamil Nadu properties to Firestore.</p>
-    <button class="btn btn-primary btn-lg mt-3" id="seed-btn">Seed Properties</button>
+    <p class="text-secondary" id="auth-status">Checking auth...</p>
+    <button class="btn btn-primary btn-lg mt-3" id="seed-btn" disabled>Sign in first</button>
     <div id="status" class="mt-3 text-secondary"></div>
   </div>
 
   <script type="module">
     import { seedProperties } from './js/seed-data.js';
+    import { initAuth, getCurrentUser } from './js/auth.js';
+
+    let currentUser = null;
+
+    initAuth((user, userData) => {
+      currentUser = user;
+      const btn = document.getElementById('seed-btn');
+      const authStatus = document.getElementById('auth-status');
+      if (user) {
+        authStatus.textContent = `Signed in as ${user.email}`;
+        authStatus.style.color = 'var(--success)';
+        btn.disabled = false;
+        btn.textContent = 'Seed Properties';
+      } else {
+        authStatus.textContent = 'Not signed in — sign in to seed data';
+        authStatus.style.color = 'var(--error)';
+        btn.disabled = true;
+        btn.textContent = 'Sign in first';
+      }
+    });
 
     document.getElementById('seed-btn').addEventListener('click', async () => {
+      if (!currentUser) return;
       const btn = document.getElementById('seed-btn');
       const status = document.getElementById('status');
       btn.disabled = true;
@@ -26,7 +48,7 @@
       status.textContent = 'Adding properties to Firestore...';
 
       try {
-        const count = await seedProperties();
+        const count = await seedProperties(currentUser.uid);
         status.textContent = `Success! Added ${count} properties. Go to index.html to see them.`;
         status.style.color = 'var(--success)';
       } catch (err) {

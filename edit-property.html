@@ -168,7 +168,7 @@
           window.location.href = 'profile.html';
           return;
         }
-        if (property.ownerId !== user.uid && property.ownerId !== 'seed-data') {
+        if (property.ownerId !== user.uid) {
           showToast('You can only edit your own properties', 'error');
           window.location.href = 'profile.html';
           return;

@@ -275,7 +275,8 @@ const MOCK_PROPERTIES = [
   }
 ];
 
-export async function seedProperties() {
+export async function seedProperties(userId) {
+  if (!userId) throw new Error('userId is required — sign in first');
   const propertiesRef = collection(db, 'properties');
   let count = 0;
 
@@ -285,7 +286,7 @@ export async function seedProperties() {
       ...prop,
       images,
       coordinates: { latitude: 0, longitude: 0 },
-      ownerId: 'seed-data',
+      ownerId: userId,
       additionalDetails: {},
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
