@@ -2,13 +2,18 @@
   "name": "gharforsale-web",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "GharForSale — Real Estate Marketplace Website",
   "scripts": {
-    "dev": "vercel dev",
+    "dev": "node server.js",
     "build": "echo 'Static site — no build step'",
     "deploy": "vercel --prod"
   },
   "dependencies": {
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
   }
 }
