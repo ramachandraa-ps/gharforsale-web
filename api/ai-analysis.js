@@ -44,39 +44,48 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { location, area, landRate, type, price, bedrooms, bathrooms } = req.body;
+    const { location, area, landRate, type, price, bedrooms, bathrooms, title, description } = req.body;
 
-    const prompt = `Analyze this real estate property and provide investment insights:
+    const pricePerSqft = (price && area) ? Math.round(price / area) : null;
+
+    const prompt = `You are an expert Indian real estate investment analyst. Analyze this specific property and provide highly tailored investment insights.
 
 Property Details:
+- Title: ${title || 'Not specified'}
 - Location: ${location || 'Not specified'}
 - Type: ${type || 'Not specified'}
-- Price: ₹${price || 0}
+- Price: ₹${(price || 0).toLocaleString('en-IN')}
 - Area: ${area || 0} sq ft
-- Land Rate: ₹${landRate || 0} per sq ft
-- Bedrooms: ${bedrooms || 0}
-- Bathrooms: ${bathrooms || 0}
+${pricePerSqft ? `- Price per sq ft: ₹${pricePerSqft.toLocaleString('en-IN')}` : ''}
+${landRate ? `- Land Rate: ₹${landRate} per sq ft` : ''}
+- Bedrooms: ${bedrooms || 'N/A'}
+- Bathrooms: ${bathrooms || 'N/A'}
+${description ? `- Description: ${description.substring(0, 300)}` : ''}
 
-Please provide a JSON response with the following structure (no markdown, just raw JSON):
+IMPORTANT: Your analysis must be SPECIFIC to this exact property's location, type, price range, and characteristics. Do NOT give generic responses. Consider:
+- The specific city/area and its real estate market dynamics
+- Whether the price per sq ft is above/below market average for that area
+- The property type (flat vs villa vs plot vs commercial) and its investment profile
+- Current Indian real estate trends for this specific segment
+
+Respond with ONLY raw JSON (no markdown fences, no explanation):
 {
   "scores": {
-    "location": <number 0-10>,
-    "roi": <number 0-10>,
-    "growth": <number 0-10>
+    "location": <number 0-10 with one decimal>,
+    "roi": <number 0-10 with one decimal>,
+    "growth": <number 0-10 with one decimal>
   },
   "market_insights": {
-    "demand_level": "<string>",
-    "supply_status": "<string>",
-    "price_trend": "<string>"
+    "demand_level": "<specific demand assessment for this area and property type>",
+    "supply_status": "<supply situation in this micro-market>",
+    "price_trend": "<price trend specific to this location and segment>"
   },
   "investment_metrics": {
-    "expected_roi": "<string>",
-    "rental_yield": "<string>",
-    "price_appreciation": "<string>"
+    "expected_roi": "<specific ROI estimate with percentage range>",
+    "rental_yield": "<rental yield estimate specific to this property type and area>",
+    "price_appreciation": "<appreciation forecast for this specific location>"
   }
-}
-
-Be specific to the Indian real estate market. Provide realistic scores and insights.`;
+}`;
 
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 

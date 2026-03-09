@@ -63,55 +63,23 @@
   </div>
 
   <script type="module">
-    import { initAuth, signInWithGoogle, handleRedirectResult, setUserRole } from './js/auth.js';
+    import { initAuth, signInWithGoogle, setUserRole } from './js/auth.js';
     import { showToast } from './js/ui.js';
 
     const roleModal = document.getElementById('role-modal');
     const signinBtn = document.getElementById('google-signin-btn');
 
-    // Step 1: Check if returning from a redirect sign-in
-    // This must be called BEFORE initAuth to handle the redirect result first
-    (async () => {
-      try {
-        signinBtn.disabled = true;
-        signinBtn.textContent = 'Checking sign-in...';
-
-        const result = await handleRedirectResult();
-        if (result) {
-          // We just returned from Google sign-in redirect
-          const { user, userData } = result;
-          if (userData && userData.role) {
-            window.location.href = 'index.html';
-            return;
-          } else {
-            // New user - show role selection
-            roleModal.classList.remove('hidden');
-            signinBtn.disabled = false;
-            signinBtn.textContent = 'Sign in with Google';
-            // Restore the Google SVG icon
-            restoreButton();
-            return;
-          }
-        }
-      } catch (err) {
-        console.error('Redirect result error:', err);
-        showToast('Sign in failed: ' + err.message, 'error');
+    // Check if already logged in via auth state
+    initAuth((user, userData) => {
+      if (user && userData && userData.role) {
+        window.location.href = 'index.html';
+      } else if (user && (!userData || !userData.role)) {
+        roleModal.classList.remove('hidden');
       }
-
-      // Step 2: No redirect result - check if already logged in via auth state
-      signinBtn.disabled = false;
-      restoreButton();
-
-      initAuth((user, userData) => {
-        if (user && userData && userData.role) {
-          window.location.href = 'index.html';
-        } else if (user && (!userData || !userData.role)) {
-          roleModal.classList.remove('hidden');
-        }
-      });
-    })();
+    });
 
     function restoreButton() {
+      signinBtn.disabled = false;
       signinBtn.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 48 48">
           <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -122,12 +90,30 @@
         Sign in with Google`;
     }
 
-    // Google Sign-In button — initiates redirect (full page navigation)
-    signinBtn.addEventListener('click', () => {
+    // Google Sign-In button — opens popup for sign-in
+    signinBtn.addEventListener('click', async () => {
       signinBtn.disabled = true;
-      signinBtn.textContent = 'Redirecting...';
-      signInWithGoogle();
-      // Page will navigate away to Google's sign-in page
+      signinBtn.textContent = 'Signing in...';
+      try {
+        const result = await signInWithGoogle();
+        if (result) {
+          const { user, userData } = result;
+          if (userData && userData.role) {
+            window.location.href = 'index.html';
+          } else {
+            // New user - show role selection
+            roleModal.classList.remove('hidden');
+            restoreButton();
+          }
+        } else {
+          // User closed popup
+          restoreButton();
+        }
+      } catch (err) {
+        console.error('Sign-in error:', err);
+        showToast('Sign in failed: ' + err.message, 'error');
+        restoreButton();
+      }
     });
 
     // Role selection cards

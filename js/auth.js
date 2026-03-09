@@ -1,6 +1,6 @@
 import { auth, db, googleProvider } from './firebase-config.js';
 import {
-  onAuthStateChanged, signInWithRedirect, getRedirectResult, signOut
+  onAuthStateChanged, signInWithPopup, signOut
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import {
   doc, getDoc, setDoc, serverTimestamp
@@ -75,21 +75,12 @@ export function initAuth(onReady) {
 }
 
 /**
- * Initiates Google sign-in via full-page redirect (no popup, no COOP issues).
- * After sign-in, the browser redirects back to the current page.
- * Use handleRedirectResult() on page load to get the result.
+ * Initiates Google sign-in via popup.
+ * Returns {user, userData} on success, null if popup was closed.
  */
-export function signInWithGoogle() {
-  return signInWithRedirect(auth, googleProvider);
-}
-
-/**
- * Call on page load to check if we're returning from a redirect sign-in.
- * Returns {user, userData} if returning from redirect, null otherwise.
- */
-export async function handleRedirectResult() {
+export async function signInWithGoogle() {
   try {
-    const result = await getRedirectResult(auth);
+    const result = await signInWithPopup(auth, googleProvider);
     if (result && result.user) {
       const userData = await ensureUserDoc(result.user);
       currentUser = result.user;
@@ -97,10 +88,10 @@ export async function handleRedirectResult() {
       return { user: result.user, userData };
     }
   } catch (err) {
-    if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
-      console.error('Redirect result error:', err);
-      throw err;
+    if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+      return null; // User closed popup, not an error
     }
+    throw err;
   }
   return null;
 }

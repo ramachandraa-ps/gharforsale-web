@@ -305,13 +305,15 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            title: property.title,
             location: property.location,
             area: property.area,
             landRate: property.landRate,
             type: property.type,
             price: property.price,
             bedrooms: property.bedrooms,
-            bathrooms: property.bathrooms
+            bathrooms: property.bathrooms,
+            description: property.description
           })
         });
 
