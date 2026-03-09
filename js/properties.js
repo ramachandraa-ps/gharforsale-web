@@ -191,7 +191,9 @@ export async function searchProperties(searchTerm) {
 
 export function buildPropertyObject(formData, userData) {
   const type = formData.type || 'house';
-  const images = getMultipleStockImages(type, 3);
+  // Use title + timestamp as seed for unique images per property
+  const seed = `${formData.title || ''}-${Date.now()}`;
+  const images = getMultipleStockImages(type, 3, seed);
 
   return {
     title: formData.title || '',

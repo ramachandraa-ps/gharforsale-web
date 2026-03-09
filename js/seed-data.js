@@ -280,8 +280,14 @@ export async function seedProperties(userId) {
   const propertiesRef = collection(db, 'properties');
   let count = 0;
 
-  for (const prop of MOCK_PROPERTIES) {
-    const images = getMultipleStockImages(prop.type, 3);
+  // Track per-type counters so each property of the same type gets unique images
+  const typeCounters = {};
+  for (let i = 0; i < MOCK_PROPERTIES.length; i++) {
+    const prop = MOCK_PROPERTIES[i];
+    if (!(prop.type in typeCounters)) typeCounters[prop.type] = 0;
+    const typeIndex = typeCounters[prop.type]++;
+    // Pass numeric index for guaranteed unique offset per type
+    const images = getMultipleStockImages(prop.type, 3, typeIndex);
     const docData = {
       ...prop,
       images,
